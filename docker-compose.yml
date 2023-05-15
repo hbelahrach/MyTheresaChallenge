@@ -1,0 +1,38 @@
+version: "3.8"
+networks:
+  my_theresa:
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - my_db
+    networks:
+      - my_theresa
+  phpunit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - my_db
+    networks:
+      - my_theresa
+    command: ["vendor/bin/phpunit"]
+
+  my_db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: my_theresa_user
+      POSTGRES_PASSWORD: my_theresa_password
+      POSTGRES_DB: mytheresa
+    ports:
+      - "5432:5432"
+    networks:
+      - my_theresa
